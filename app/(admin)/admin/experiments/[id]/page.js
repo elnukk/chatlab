@@ -218,7 +218,7 @@ export default function ExperimentDetailPage() {
         </p>
         <pre className="bg-gray-50 rounded-lg p-3 text-xs font-mono text-gray-700 overflow-x-auto">
 {`<iframe
-  src="${typeof window !== 'undefined' ? window.location.origin : 'https://your-app.com'}/chat?experiment_id=${params.id}&participant_id=\${e://Field/prolific_id}&persona=friendly&topic=cooking"
+  src="${typeof window !== 'undefined' ? window.location.origin : 'https://chatlab-six.vercel.app'}/chat?experiment_id=${params.id}&participant_id=\${e://Field/prolific_id}&persona=friendly&topic=cooking"
   width="100%"
   height="600px"
   style="border: none;">

@@ -98,7 +98,7 @@ Ask them about their experience in their field.`}
               </p>
               <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 ml-10 text-sm font-mono text-gray-700 overflow-x-auto">
 {`<iframe
-  src="https://your-app.com/chat
+  src="https://chatlab-six.vercel.app/chat
     ?experiment_id=abc-123
     &participant_id=\${e://Field/ResponseID}
     &name=\${e://Field/name}

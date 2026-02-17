@@ -1,4 +1,5 @@
 import './globals.css';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
   title: 'Open-Source Chatbot Experiment Platform for Qualtrics',
@@ -21,13 +22,17 @@ export const metadata = {
     description:
       'Embed AI chatbot conversations into Qualtrics surveys. Pass URL parameters as template variables in your system prompt.',
     type: 'website',
+    url: 'https://chatlab-six.vercel.app',
   },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
