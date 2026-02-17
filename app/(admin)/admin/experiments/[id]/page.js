@@ -44,8 +44,23 @@ export default function ExperimentDetailPage() {
 
   const copyEmbedUrl = () => {
     const baseUrl = window.location.origin;
-    const url = `${baseUrl}/chat?experiment_id=${params.id}&participant_id=\${e://Field/prolific_id}`;
-    navigator.clipboard.writeText(url);
+    const js = `Qualtrics.SurveyEngine.addOnload(function () {
+  var participantId = "\${e://Field/ResponseID}";
+
+  var iframeUrl =
+    "${baseUrl}/chat" +
+    "?experiment_id=${params.id}" +
+    "&participant_id=" + encodeURIComponent(participantId);
+
+  var iframe = document.createElement("iframe");
+  iframe.src = iframeUrl;
+  iframe.style.width = "100%";
+  iframe.style.height = "600px";
+  iframe.style.border = "none";
+
+  this.getQuestionContainer().appendChild(iframe);
+});`;
+    navigator.clipboard.writeText(js);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -213,16 +228,26 @@ export default function ExperimentDetailPage() {
           </h2>
         </div>
         <p className="text-xs text-gray-500 mb-3">
-          Embed the chat interface in your Qualtrics survey using an iframe.
+          Paste this JavaScript into your Qualtrics question&apos;s JavaScript editor.
           Any URL parameter (except experiment_id and participant_id) becomes a template variable in your system prompt.
         </p>
         <pre className="bg-gray-50 rounded-lg p-3 text-xs font-mono text-gray-700 overflow-x-auto">
-{`<iframe
-  src="${typeof window !== 'undefined' ? window.location.origin : 'https://chatlab-six.vercel.app'}/chat?experiment_id=${params.id}&participant_id=\${e://Field/prolific_id}&persona=friendly&topic=cooking"
-  width="100%"
-  height="600px"
-  style="border: none;">
-</iframe>`}
+{`Qualtrics.SurveyEngine.addOnload(function () {
+  var participantId = "\${e://Field/ResponseID}";
+
+  var iframeUrl =
+    "${typeof window !== 'undefined' ? window.location.origin : 'https://chatlab-six.vercel.app'}/chat" +
+    "?experiment_id=${params.id}" +
+    "&participant_id=" + encodeURIComponent(participantId);
+
+  var iframe = document.createElement("iframe");
+  iframe.src = iframeUrl;
+  iframe.style.width = "100%";
+  iframe.style.height = "600px";
+  iframe.style.border = "none";
+
+  this.getQuestionContainer().appendChild(iframe);
+});`}
         </pre>
         <button
           onClick={copyEmbedUrl}
@@ -233,7 +258,7 @@ export default function ExperimentDetailPage() {
           ) : (
             <Copy className="w-3.5 h-3.5" />
           )}
-          {copied ? 'Copied!' : 'Copy Base URL'}
+          {copied ? 'Copied!' : 'Copy JavaScript'}
         </button>
       </div>
 
