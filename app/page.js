@@ -90,23 +90,35 @@ Ask them about their experience in their field.`}
                 </h3>
               </div>
               <p className="text-gray-600 ml-10 mb-4">
-                Add an iframe to your Qualtrics survey. Use Qualtrics piped text to
-                pass participant data directly into the chatbot. Every URL parameter
+                In Qualtrics, add a question and paste this JavaScript in the
+                question&apos;s JavaScript editor. It creates an iframe and passes
+                participant data as URL parameters. Every parameter
                 (except <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">experiment_id</code> and{' '}
                 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">participant_id</code>) becomes
                 a template variable in your system prompt.
               </p>
               <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 ml-10 text-sm font-mono text-gray-700 overflow-x-auto">
-{`<iframe
-  src="https://chatlab-six.vercel.app/chat
-    ?experiment_id=abc-123
-    &participant_id=\${e://Field/ResponseID}
-    &name=\${e://Field/name}
-    &occupation=\${e://Field/occupation}
-    &persona=friendly"
-  width="100%" height="600px"
-  style="border: none;">
-</iframe>`}
+{`Qualtrics.SurveyEngine.addOnload(function () {
+  var participantId = "\${e://Field/ResponseID}";
+  var name = "\${e://Field/name}";
+  var occupation = "\${e://Field/occupation}";
+
+  var iframeUrl =
+    "https://chatlab-six.vercel.app/chat" +
+    "?experiment_id=YOUR_EXPERIMENT_ID" +
+    "&participant_id=" + encodeURIComponent(participantId) +
+    "&name=" + encodeURIComponent(name) +
+    "&occupation=" + encodeURIComponent(occupation) +
+    "&persona=friendly";
+
+  var iframe = document.createElement("iframe");
+  iframe.src = iframeUrl;
+  iframe.style.width = "100%";
+  iframe.style.height = "600px";
+  iframe.style.border = "none";
+
+  this.getQuestionContainer().appendChild(iframe);
+});`}
               </pre>
               <p className="text-gray-500 text-sm ml-10 mt-3">
                 Qualtrics replaces <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">{'${e://Field/name}'}</code> and{' '}
