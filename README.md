@@ -5,6 +5,15 @@ An open-source platform for embedding AI chatbot experiments in Qualtrics survey
 **Live:** [https://chatlab-six.vercel.app](https://chatlab-six.vercel.app)
 
 ---
+## How to use
+1- Go on Qualtrics and create a survey. 
+2- Add a "Text / Graphic" question and then on "Edit Question", click JavaScript. 
+3- Copy and paste the Qualtrics Integration snippet from the Experiment Dashboard.
+4- Add any additional variables that you want to send into your system message. Use the format `var name = ${e://Field/embedded_data_name;`
+5- Make sure to add the variable to your URL by using `+ "&name=" + encodeURIComponent(name);`
+
+How to set embedded data on Qualtrics? 
+Go to survey flow and add a set embedded data block. Make sure you set all your embedded data BEFORE your chatbot question block appears.
 
 ## What it does
 
