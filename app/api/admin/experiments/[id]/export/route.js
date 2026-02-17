@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import { getAuthenticatedUser } from '@/lib/auth';
-import Papa from 'papaparse';
 
 // GET /api/admin/experiments/[id]/export
 export async function GET(request, { params }) {
@@ -63,16 +62,19 @@ export async function GET(request, { params }) {
 
     // CSV format
     if (format === 'csv') {
-      const csv = Papa.unparse(flatMessages, {
-        columns: [
-          'experiment_id',
-          'participant_id',
-          'message_index',
-          'role',
-          'content',
-          'timestamp',
-        ],
-      });
+      const columns = ['experiment_id', 'participant_id', 'message_index', 'role', 'content', 'timestamp'];
+      const escapeCell = (val) => {
+        const str = String(val ?? '');
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+      const header = columns.join(',');
+      const rows = flatMessages.map((msg) =>
+        columns.map((col) => escapeCell(msg[col])).join(',')
+      );
+      const csv = [header, ...rows].join('\n');
 
       return new Response(csv, {
         status: 200,

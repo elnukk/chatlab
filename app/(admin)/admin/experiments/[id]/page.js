@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
   ArrowLeft,
-  Users,
   Download,
   Settings,
   Play,
@@ -194,22 +193,10 @@ export default function ExperimentDetailPage() {
       )}
 
       {/* Quick Links */}
-      <div className="grid grid-cols-2 gap-4">
-        <button
-          onClick={() =>
-            router.push(`/admin/experiments/${params.id}/participants`)
-          }
-          className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-sm hover:border-gray-300 transition-all text-left"
-        >
-          <Users className="w-5 h-5 text-gray-400 mb-2" />
-          <h3 className="font-medium text-sm text-gray-900">Participants</h3>
-          <p className="text-xs text-gray-500 mt-0.5">
-            View participant data and conversations
-          </p>
-        </button>
+      <div>
         <button
           onClick={() => setShowExport(true)}
-          className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-sm hover:border-gray-300 transition-all text-left"
+          className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-sm hover:border-gray-300 transition-all text-left w-full"
         >
           <Download className="w-5 h-5 text-gray-400 mb-2" />
           <h3 className="font-medium text-sm text-gray-900">Export Data</h3>
