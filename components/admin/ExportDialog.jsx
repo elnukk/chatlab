@@ -6,9 +6,11 @@ import { Download, X } from 'lucide-react';
 export default function ExportDialog({ open, onClose, experimentId }) {
   const [format, setFormat] = useState('csv');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleExport = async () => {
     setLoading(true);
+    setError('');
     try {
       const params = new URLSearchParams({ format });
 
@@ -16,7 +18,10 @@ export default function ExportDialog({ open, onClose, experimentId }) {
         `/api/admin/experiments/${experimentId}/export?${params}`
       );
 
-      if (!res.ok) throw new Error('Export failed');
+      if (!res.ok) {
+        const errData = await res.text();
+        throw new Error(errData || `Export failed (${res.status})`);
+      }
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -30,6 +35,7 @@ export default function ExportDialog({ open, onClose, experimentId }) {
       onClose();
     } catch (err) {
       console.error('Export error:', err);
+      setError(err.message || 'Export failed');
     } finally {
       setLoading(false);
     }
@@ -63,6 +69,12 @@ export default function ExportDialog({ open, onClose, experimentId }) {
             </select>
           </div>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mt-4">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
 
         <div className="flex justify-end gap-3 mt-6">
           <button
