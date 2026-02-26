@@ -18,6 +18,7 @@ export async function GET() {
         *,
         participants(id)
       `)
+      .eq('created_by', auth.user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -66,6 +67,7 @@ export async function POST(request) {
     const insertData = {
       name,
       description,
+      created_by: auth.user.id,
       llm_provider,
       llm_model,
       llm_temperature,

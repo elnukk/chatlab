@@ -15,6 +15,18 @@ export async function GET(request, { params }) {
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'json';
 
+    // Verify the experiment belongs to the authenticated user
+    const { data: experiment, error: expError } = await supabase
+      .from('experiments')
+      .select('id')
+      .eq('id', id)
+      .eq('created_by', auth.user.id)
+      .single();
+
+    if (expError || !experiment) {
+      return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
+    }
+
     // Fetch participants
     const { data: participants, error: partError } = await supabase
       .from('participants')

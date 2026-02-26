@@ -13,6 +13,18 @@ export async function GET(request, { params }) {
     const supabase = createServerClient();
     const { id } = params;
 
+    // Verify the experiment belongs to the authenticated user
+    const { data: experiment, error: expError } = await supabase
+      .from('experiments')
+      .select('id')
+      .eq('id', id)
+      .eq('created_by', auth.user.id)
+      .single();
+
+    if (expError || !experiment) {
+      return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
+    }
+
     const { data: participants, error } = await supabase
       .from('participants')
       .select(`

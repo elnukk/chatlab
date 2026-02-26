@@ -17,6 +17,7 @@ export async function GET(request, { params }) {
       .from('experiments')
       .select('*')
       .eq('id', id)
+      .eq('created_by', auth.user.id)
       .single();
 
     if (error) {
@@ -79,6 +80,7 @@ export async function PUT(request, { params }) {
       .from('experiments')
       .update(updates)
       .eq('id', id)
+      .eq('created_by', auth.user.id)
       .select()
       .single();
 
@@ -109,7 +111,8 @@ export async function DELETE(request, { params }) {
     const { error } = await supabase
       .from('experiments')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('created_by', auth.user.id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
