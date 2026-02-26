@@ -36,3 +36,5 @@ supabase/
 *.tsbuildinfo
 next-env.d.ts
 
+
+SPEC.MD
