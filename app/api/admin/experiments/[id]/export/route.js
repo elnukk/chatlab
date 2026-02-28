@@ -37,27 +37,47 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: partError.message }, { status: 500 });
     }
 
-    // Fetch conversations for these participants
+    // Fetch conversations for these participants (paginated to avoid row limit)
     const participantIds = (participants || []).map((p) => p.id);
 
     let allConversations = [];
     let allMessages = [];
 
+    const PAGE_SIZE = 1000;
+
+    async function fetchAllRows(query) {
+      const rows = [];
+      let offset = 0;
+      while (true) {
+        const { data, error } = await query(offset, offset + PAGE_SIZE - 1);
+        if (error) break;
+        if (!data || data.length === 0) break;
+        rows.push(...data);
+        if (data.length < PAGE_SIZE) break;
+        offset += PAGE_SIZE;
+      }
+      return rows;
+    }
+
     if (participantIds.length > 0) {
-      const { data: convs } = await supabase
-        .from('conversations')
-        .select('id, participant_id, status')
-        .in('participant_id', participantIds);
-      allConversations = convs || [];
+      allConversations = await fetchAllRows((from, to) =>
+        supabase
+          .from('conversations')
+          .select('id, participant_id, status')
+          .in('participant_id', participantIds)
+          .range(from, to)
+      );
 
       const convIds = allConversations.map((c) => c.id);
       if (convIds.length > 0) {
-        const { data: msgs } = await supabase
-          .from('messages')
-          .select('id, conversation_id, role, content, created_at')
-          .in('conversation_id', convIds)
-          .order('created_at', { ascending: true });
-        allMessages = msgs || [];
+        allMessages = await fetchAllRows((from, to) =>
+          supabase
+            .from('messages')
+            .select('id, conversation_id, role, content, created_at')
+            .in('conversation_id', convIds)
+            .order('created_at', { ascending: true })
+            .range(from, to)
+        );
       }
     }
 
