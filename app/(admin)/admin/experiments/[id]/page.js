@@ -234,7 +234,7 @@ export default function ExperimentDetailPage() {
   var participantId = "\${e://Field/ResponseID}";
 
   var iframeUrl =
-    "${typeof window !== 'undefined' ? window.location.origin : 'https://chatlab-six.vercel.app'}/chat" +
+    "${typeof window !== 'undefined' ? window.location.origin : 'https://chat2survey.com'}/chat" +
     "?experiment_id=${params.id}" +
     "&participant_id=" + encodeURIComponent(participantId);
 

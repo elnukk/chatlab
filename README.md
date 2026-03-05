@@ -2,7 +2,7 @@
 
 An open-source platform for embedding AI chatbot experiments in Qualtrics surveys.
 
-**Live:** [https://chatlab-six.vercel.app](https://chatlab-six.vercel.app)
+**Live:** [https://chat2survey.com](https://chat2survey.com)
 
 ---
 ## How to use

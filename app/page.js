@@ -104,7 +104,7 @@ Ask them about their experience in their field.`}
   var occupation = "\${e://Field/occupation}";
 
   var iframeUrl =
-    "https://chatlab-six.vercel.app/chat" +
+    "https://chat2survey.com/chat" +
     "?experiment_id=YOUR_EXPERIMENT_ID" +
     "&participant_id=" + encodeURIComponent(participantId) +
     "&name=" + encodeURIComponent(name) +

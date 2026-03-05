@@ -22,7 +22,7 @@ export const metadata = {
     description:
       'Embed AI chatbot conversations into Qualtrics surveys. Pass URL parameters as template variables in your system prompt.',
     type: 'website',
-    url: 'https://chatlab-six.vercel.app',
+    url: 'https://chat2survey.com',
   },
 };
 
