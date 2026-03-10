@@ -2,9 +2,9 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 
 export const metadata = {
-  title: 'Open-Source Chatbot Experiment Platform for Qualtrics',
+  title: 'Chatbot Experiment Platform for Qualtrics',
   description:
-    'Embed AI chatbot conversations into Qualtrics surveys. Pass any URL parameter as a template variable in your system prompt. Supports OpenAI and Anthropic. Free and open-source.',
+    'Embed AI chatbot conversations into Qualtrics surveys. Pass any URL parameter as a template variable in your system prompt. Supports OpenAI and Anthropic. Free.',
   keywords: [
     'chatbot experiment',
     'qualtrics chatbot',
@@ -15,10 +15,10 @@ export const metadata = {
     'openai qualtrics',
     'anthropic qualtrics',
     'chatbot user study',
-    'open source experiment platform',
+    'experiment platform',
   ],
   openGraph: {
-    title: 'Open-Source Chatbot Experiment Platform for Qualtrics',
+    title: 'Chatbot Experiment Platform for Qualtrics',
     description:
       'Embed AI chatbot conversations into Qualtrics surveys. Pass URL parameters as template variables in your system prompt.',
     type: 'website',

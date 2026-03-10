@@ -31,7 +31,7 @@ export default function HomePage() {
           Embed AI chatbots in Qualtrics surveys
         </h1>
         <p className="text-lg text-gray-600 mt-4 max-w-2xl">
-          An open-source platform for researchers who need to run chatbot
+          A platform for researchers who need to run chatbot
           experiments. Create a system prompt, embed an iframe in Qualtrics, and
           collect conversation data. Any URL parameter becomes a template
           variable in your prompt.
@@ -227,7 +227,7 @@ Ask them about their experience in their field.`}
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-gray-200">
         <div className="max-w-4xl mx-auto text-center text-sm text-gray-400">
-          Open-source chatbot experiment platform
+          Chatbot experiment platform
         </div>
       </footer>
     </div>

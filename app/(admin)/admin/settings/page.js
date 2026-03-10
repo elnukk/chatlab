@@ -86,7 +86,7 @@ export default function SettingsPage() {
           </div>
           <div className="space-y-2 text-sm text-gray-600">
             <p>Chatbot Experiment Platform v1.0</p>
-            <p>Open-source platform for running AI chatbot experiments</p>
+            <p>Platform for running AI chatbot experiments</p>
             <p className="text-xs text-gray-400">
               Licensed under MIT License
             </p>

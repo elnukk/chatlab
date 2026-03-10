@@ -1,7 +1,7 @@
 {
   "name": "chatbot-experiment-platform",
   "version": "1.0.0",
-  "description": "Open-source platform for running AI chatbot experiments embedded in survey tools like Qualtrics",
+  "description": "Platform for running AI chatbot experiments embedded in survey tools like Qualtrics",
   "private": true,
   "scripts": {
     "dev": "next dev",
