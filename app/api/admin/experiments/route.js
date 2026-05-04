@@ -12,12 +12,9 @@ export async function GET() {
 
     const supabase = createServerClient();
 
-    const { data: experiments, error } = await supabase
+    const { data: owned, error } = await supabase
       .from('experiments')
-      .select(`
-        *,
-        participants(id)
-      `)
+      .select('*, participants(id)')
       .eq('created_by', auth.user.id)
       .order('created_at', { ascending: false });
 
@@ -25,12 +22,34 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const result = experiments.map((exp) => ({
+    const { data: collabs } = await supabase
+      .from('experiment_collaborators')
+      .select('experiment_id')
+      .eq('researcher_id', auth.user.id);
+
+    let shared = [];
+    const collabIds = (collabs || []).map((c) => c.experiment_id);
+    if (collabIds.length > 0) {
+      const { data } = await supabase
+        .from('experiments')
+        .select('*, participants(id)')
+        .in('id', collabIds)
+        .order('created_at', { ascending: false });
+      shared = data || [];
+    }
+
+    const format = (exp, isOwner) => ({
       ...exp,
       llm_api_key: exp.llm_api_key ? '••••••' + exp.llm_api_key.slice(-4) : null,
       participants_count: exp.participants?.length ?? 0,
       participants: undefined,
-    }));
+      is_owner: isOwner,
+    });
+
+    const result = [
+      ...(owned || []).map((exp) => format(exp, true)),
+      ...shared.map((exp) => format(exp, false)),
+    ];
 
     return NextResponse.json(result);
   } catch (err) {

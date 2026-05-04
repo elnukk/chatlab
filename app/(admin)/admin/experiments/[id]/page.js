@@ -12,6 +12,8 @@ import {
   Link2,
   Copy,
   Users,
+  UserPlus,
+  X,
 } from 'lucide-react';
 import ExportDialog from '@/components/admin/ExportDialog';
 
@@ -22,6 +24,10 @@ export default function ExperimentDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showExport, setShowExport] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [collaborators, setCollaborators] = useState([]);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState(null);
 
   useEffect(() => {
     fetch(`/api/admin/experiments/${params.id}`)
@@ -29,7 +35,47 @@ export default function ExperimentDetailPage() {
       .then((data) => setExperiment(data))
       .catch(console.error)
       .finally(() => setLoading(false));
+
+    fetch(`/api/admin/experiments/${params.id}/collaborators`)
+      .then((res) => res.json())
+      .then((data) => setCollaborators(Array.isArray(data) ? data : []))
+      .catch(console.error);
   }, [params.id]);
+
+  const addCollaborator = async () => {
+    if (!inviteEmail.trim()) return;
+    setInviteLoading(true);
+    setInviteError(null);
+    try {
+      const res = await fetch(`/api/admin/experiments/${params.id}/collaborators`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: inviteEmail.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setInviteError(data.error);
+      } else {
+        setCollaborators((prev) => [...prev, data]);
+        setInviteEmail('');
+      }
+    } catch {
+      setInviteError('Something went wrong');
+    } finally {
+      setInviteLoading(false);
+    }
+  };
+
+  const removeCollaborator = async (researcherId) => {
+    const res = await fetch(`/api/admin/experiments/${params.id}/collaborators`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ researcher_id: researcherId }),
+    });
+    if (res.ok) {
+      setCollaborators((prev) => prev.filter((c) => c.researcher_id !== researcherId));
+    }
+  };
 
   const updateStatus = async (status) => {
     const res = await fetch(`/api/admin/experiments/${params.id}`, {
@@ -215,6 +261,64 @@ export default function ExperimentDetailPage() {
             Download conversation data as CSV or JSON
           </p>
         </button>
+      </div>
+
+      {/* Collaborators */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5 mt-6">
+        <div className="flex items-center gap-2 mb-4">
+          <UserPlus className="w-4 h-4 text-gray-400" />
+          <h2 className="text-sm font-semibold text-gray-900">Collaborators</h2>
+        </div>
+
+        {collaborators.length > 0 && (
+          <ul className="mb-4 space-y-2">
+            {collaborators.map((c) => (
+              <li key={c.researcher_id} className="flex items-center justify-between text-sm">
+                <div>
+                  <span className="font-medium text-gray-800">{c.name}</span>
+                  <span className="text-gray-400 ml-2">{c.email}</span>
+                </div>
+                {experiment.is_owner && (
+                  <button
+                    onClick={() => removeCollaborator(c.researcher_id)}
+                    className="text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {experiment.is_owner ? (
+          <div>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="collaborator@example.com"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addCollaborator()}
+                className="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-900"
+              />
+              <button
+                onClick={addCollaborator}
+                disabled={inviteLoading || !inviteEmail.trim()}
+                className="px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+              >
+                {inviteLoading ? 'Adding…' : 'Add'}
+              </button>
+            </div>
+            {inviteError && (
+              <p className="text-xs text-red-600 mt-1.5">{inviteError}</p>
+            )}
+          </div>
+        ) : (
+          collaborators.length === 0 && (
+            <p className="text-xs text-gray-400">No collaborators yet.</p>
+          )
+        )}
       </div>
 
       {/* Embed Instructions */}

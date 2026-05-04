@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import { getAuthenticatedUser } from '@/lib/auth';
+import { getExperimentAccess } from '@/lib/utils/experiment-access';
 
 // GET /api/admin/experiments/[id]/participants
 export async function GET(request, { params }) {
@@ -13,17 +14,8 @@ export async function GET(request, { params }) {
     const supabase = createServerClient();
     const { id } = params;
 
-    // Verify the experiment belongs to the authenticated user
-    const { data: experiment, error: expError } = await supabase
-      .from('experiments')
-      .select('id')
-      .eq('id', id)
-      .eq('created_by', auth.user.id)
-      .single();
-
-    if (expError || !experiment) {
-      return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
-    }
+    const access = await getExperimentAccess(supabase, id, auth.user.id);
+    if (!access) return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
 
     const { data: participants, error } = await supabase
       .from('participants')

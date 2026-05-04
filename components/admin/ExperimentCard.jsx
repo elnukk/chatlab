@@ -19,6 +19,11 @@ export default function ExperimentCard({ experiment, onClick }) {
         <div className="flex items-center gap-2">
           <FlaskConical className="w-4 h-4 text-gray-400" />
           <h3 className="font-semibold text-gray-900">{experiment.name}</h3>
+          {experiment.is_owner === false && (
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-blue-50 text-blue-600">
+              Shared
+            </span>
+          )}
         </div>
         <span
           className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${

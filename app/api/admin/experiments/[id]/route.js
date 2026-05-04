@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import { getAuthenticatedUser } from '@/lib/auth';
+import { getExperimentAccess } from '@/lib/utils/experiment-access';
 
 // GET /api/admin/experiments/[id]
 export async function GET(request, { params }) {
@@ -13,25 +14,15 @@ export async function GET(request, { params }) {
     const supabase = createServerClient();
     const { id } = params;
 
-    const { data: experiment, error } = await supabase
-      .from('experiments')
-      .select('*')
-      .eq('id', id)
-      .eq('created_by', auth.user.id)
-      .single();
+    const access = await getExperimentAccess(supabase, id, auth.user.id);
+    if (!access) return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
-      }
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
+    const { experiment, isOwner } = access;
     if (experiment.llm_api_key) {
       experiment.llm_api_key = '••••••' + experiment.llm_api_key.slice(-4);
     }
 
-    return NextResponse.json(experiment);
+    return NextResponse.json({ ...experiment, is_owner: isOwner });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
@@ -48,6 +39,9 @@ export async function PUT(request, { params }) {
     const supabase = createServerClient();
     const { id } = params;
     const body = await request.json();
+
+    const access = await getExperimentAccess(supabase, id, auth.user.id);
+    if (!access) return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
 
     const allowedFields = [
       'name',
@@ -80,14 +74,10 @@ export async function PUT(request, { params }) {
       .from('experiments')
       .update(updates)
       .eq('id', id)
-      .eq('created_by', auth.user.id)
       .select()
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
-      }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
@@ -108,11 +98,14 @@ export async function DELETE(request, { params }) {
     const supabase = createServerClient();
     const { id } = params;
 
+    const access = await getExperimentAccess(supabase, id, auth.user.id);
+    if (!access) return NextResponse.json({ error: 'Experiment not found' }, { status: 404 });
+    if (!access.isOwner) return NextResponse.json({ error: 'Only the owner can delete this experiment' }, { status: 403 });
+
     const { error } = await supabase
       .from('experiments')
       .delete()
-      .eq('id', id)
-      .eq('created_by', auth.user.id);
+      .eq('id', id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
