@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import { getAuthenticatedUser } from '@/lib/auth';
+import { encryptApiKey } from '@/lib/crypto';
 
 // GET /api/admin/experiments
 export async function GET() {
@@ -40,7 +41,7 @@ export async function GET() {
 
     const format = (exp, isOwner) => ({
       ...exp,
-      llm_api_key: exp.llm_api_key ? '••••••' + exp.llm_api_key.slice(-4) : null,
+      llm_api_key: exp.llm_api_key ? '••••••••••' : null,
       participants_count: exp.participants?.length ?? 0,
       participants: undefined,
       is_owner: isOwner,
@@ -98,7 +99,7 @@ export async function POST(request) {
       completion_message: completion_message || 'Thank you for completing this conversation.',
     };
     if (llm_api_key) {
-      insertData.llm_api_key = llm_api_key;
+      insertData.llm_api_key = encryptApiKey(llm_api_key);
     }
 
     const { data: experiment, error: expError } = await supabase

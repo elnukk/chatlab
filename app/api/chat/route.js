@@ -2,6 +2,7 @@ import { createServerClient } from '@/lib/supabase-server';
 import { getProvider } from '@/lib/llm';
 import { renderPrompt } from '@/lib/prompts/renderer';
 import { getCorsHeaders } from '@/lib/utils/cors';
+import { decryptApiKey } from '@/lib/crypto';
 
 export async function OPTIONS(request) {
   const origin = request.headers.get('origin') || '';
@@ -187,7 +188,7 @@ export async function POST(request) {
       messages: conversationHistory,
       temperature: experiment.llm_temperature,
       maxTokens: experiment.llm_max_tokens,
-      apiKey: experiment.llm_api_key,
+      apiKey: decryptApiKey(experiment.llm_api_key),
     });
 
     // 10. Store assistant message

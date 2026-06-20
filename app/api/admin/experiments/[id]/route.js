@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 import { getAuthenticatedUser } from '@/lib/auth';
 import { getExperimentAccess } from '@/lib/utils/experiment-access';
+import { encryptApiKey } from '@/lib/crypto';
 
 // GET /api/admin/experiments/[id]
 export async function GET(request, { params }) {
@@ -19,7 +20,7 @@ export async function GET(request, { params }) {
 
     const { experiment, isOwner } = access;
     if (experiment.llm_api_key) {
-      experiment.llm_api_key = '••••••' + experiment.llm_api_key.slice(-4);
+      experiment.llm_api_key = '••••••••••';
     }
 
     return NextResponse.json({ ...experiment, is_owner: isOwner });
@@ -65,7 +66,9 @@ export async function PUT(request, { params }) {
         if (field === 'llm_api_key' && body[field] && body[field].startsWith('••••••')) {
           continue;
         }
-        updates[field] = body[field];
+        updates[field] = field === 'llm_api_key' && body[field]
+          ? encryptApiKey(body[field])
+          : body[field];
       }
     }
     updates.updated_at = new Date().toISOString();
