@@ -1,6 +1,8 @@
 {
   "agent-elanuk-88616": {
-    "files": [],
+    "files": [
+      "lib/llm/openai.js"
+    ],
     "owner": "elanuk",
     "started": 1788861423,
     "expires": 1788862323,
