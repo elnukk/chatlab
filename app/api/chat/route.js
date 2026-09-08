@@ -226,7 +226,7 @@ export async function POST(request) {
     console.error('Chat API error:', error);
     return Response.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500, headers: { 'Access-Control-Allow-Origin': origin || '*' } }
     );
   }
 }
