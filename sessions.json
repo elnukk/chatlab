@@ -1,7 +1,8 @@
 {
   "agent-elanuk-88616": {
     "files": [
-      "lib/llm/openai.js"
+      "lib/llm/openai.js",
+      "app/api/chat/route.js"
     ],
     "owner": "elanuk",
     "started": 1788861423,
