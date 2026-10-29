@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ModelSelect from '@/components/admin/ModelSelect';
+import { DEFAULT_MODELS } from '@/lib/llm/models';
 import { ArrowLeft, Check } from 'lucide-react';
 
 export default function NewExperimentPage() {
@@ -13,7 +15,7 @@ export default function NewExperimentPage() {
     name: '',
     description: '',
     llm_provider: 'openai',
-    llm_model: 'gpt-4',
+    llm_model: DEFAULT_MODELS.openai,
     llm_temperature: 0.7,
     llm_max_tokens: '',
     llm_api_key: '',
@@ -199,7 +201,13 @@ export default function NewExperimentPage() {
               </label>
               <select
                 value={form.llm_provider}
-                onChange={(e) => updateField('llm_provider', e.target.value)}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    llm_provider: e.target.value,
+                    llm_model: DEFAULT_MODELS[e.target.value],
+                  }))
+                }
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
               >
                 <option value="openai">OpenAI</option>
@@ -211,12 +219,11 @@ export default function NewExperimentPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Model
               </label>
-              <input
-                type="text"
+              <ModelSelect
+                key={form.llm_provider}
+                provider={form.llm_provider}
                 value={form.llm_model}
-                onChange={(e) => updateField('llm_model', e.target.value)}
-                placeholder="gpt-4"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                onChange={(value) => updateField('llm_model', value)}
               />
             </div>
           </div>

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import ModelSelect from '@/components/admin/ModelSelect';
+import { DEFAULT_MODELS } from '@/lib/llm/models';
 import { ArrowLeft, Save } from 'lucide-react';
 
 export default function EditExperimentPage() {
@@ -21,7 +23,7 @@ export default function EditExperimentPage() {
           name: data.name || '',
           description: data.description || '',
           llm_provider: data.llm_provider || 'openai',
-          llm_model: data.llm_model || 'gpt-4',
+          llm_model: data.llm_model || DEFAULT_MODELS[data.llm_provider || 'openai'],
           llm_temperature: data.llm_temperature ?? 0.7,
           llm_max_tokens: data.llm_max_tokens || '',
           llm_api_key: '',
@@ -190,7 +192,11 @@ export default function EditExperimentPage() {
               <select
                 value={form.llm_provider}
                 onChange={(e) =>
-                  setForm({ ...form, llm_provider: e.target.value })
+                  setForm({
+                    ...form,
+                    llm_provider: e.target.value,
+                    llm_model: DEFAULT_MODELS[e.target.value],
+                  })
                 }
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
               >
@@ -203,11 +209,11 @@ export default function EditExperimentPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Model
               </label>
-              <input
-                type="text"
+              <ModelSelect
+                key={form.llm_provider}
+                provider={form.llm_provider}
                 value={form.llm_model}
-                onChange={(e) => setForm({ ...form, llm_model: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                onChange={(value) => setForm({ ...form, llm_model: value })}
               />
             </div>
           </div>
